@@ -9,7 +9,7 @@ name="viewport"
 content="width=device-width, initial-scale=1.0"
 >
 
-<title>Cliente</title>
+<title>Entregador Premium</title>
 
 <style>
 
@@ -17,90 +17,343 @@ content="width=device-width, initial-scale=1.0"
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial,sans-serif;
+font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:linear-gradient(180deg,#0f172a,#1e293b);
+
+background:
+linear-gradient(
+180deg,
+#0f172a,
+#1e1b4b,
+#312e81
+);
+
 color:white;
-padding:20px;
+
+padding:18px;
+
 min-height:100vh;
 }
 
 .card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(10px);
-padding:20px;
-border-radius:20px;
+
+background:
+rgba(15,23,42,0.75);
+
+backdrop-filter:blur(14px);
+
+padding:22px;
+
+border-radius:28px;
+
 margin-bottom:20px;
+
+border:
+1px solid rgba(255,255,255,0.08);
+
+box-shadow:
+0 10px 35px rgba(0,0,0,0.35);
+}
+
+h1,h2{
+
+font-weight:800;
+
+letter-spacing:0.5px;
 }
 
 input,
-button,
-textarea,
-select{
+button{
+
 width:100%;
-padding:14px;
+
+padding:15px;
+
 border:none;
-border-radius:14px;
-margin-top:10px;
+
+border-radius:18px;
+
+margin-top:12px;
+
 font-size:16px;
 }
 
-button{
-background:#2563eb;
+input{
+
+background:
+rgba(255,255,255,0.08);
+
 color:white;
-font-weight:bold;
-cursor:pointer;
+
+outline:none;
+
+border:
+1px solid rgba(255,255,255,0.08);
 }
 
-textarea{
-min-height:120px;
-resize:none;
+input::placeholder{
+color:#cbd5e1;
+}
+
+button{
+
+background:
+linear-gradient(
+90deg,
+#7c3aed,
+#2563eb
+);
+
+color:white;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:0.3s;
+}
+
+button:hover{
+
+transform:scale(1.02);
+
+opacity:0.95;
 }
 
 .pedido{
-background:#1e293b;
-padding:15px;
-border-radius:15px;
-margin-top:15px;
+
+background:
+linear-gradient(
+180deg,
+#1e293b,
+#0f172a
+);
+
+padding:18px;
+
+border-radius:24px;
+
+margin-top:18px;
+
+border:
+1px solid rgba(255,255,255,0.08);
+
+position:relative;
+
+overflow:hidden;
+}
+
+.pedido::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:5px;
+
+background:
+linear-gradient(
+90deg,
+#7c3aed,
+#06b6d4
+);
 }
 
 img{
+
 width:100%;
-border-radius:15px;
-margin-top:10px;
-max-height:300px;
+
+border-radius:18px;
+
+margin-top:14px;
+
+max-height:280px;
+
 object-fit:cover;
+
+border:
+2px solid rgba(255,255,255,0.08);
 }
 
 .hidden{
 display:none !important;
 }
 
+.online{
+
+color:#22c55e;
+
+font-weight:bold;
+
+background:
+rgba(34,197,94,0.15);
+
+padding:6px 12px;
+
+border-radius:30px;
+
+display:inline-block;
+
+margin-top:8px;
+}
+
+.offline{
+
+color:#ef4444;
+
+font-weight:bold;
+
+background:
+rgba(239,68,68,0.15);
+
+padding:6px 12px;
+
+border-radius:30px;
+
+display:inline-block;
+
+margin-top:8px;
+}
+
+.perfil{
+
+display:flex;
+
+align-items:center;
+
+gap:14px;
+
+margin-bottom:18px;
+}
+
+.avatar{
+
+width:65px;
+
+height:65px;
+
+border-radius:50%;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#06b6d4
+);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:26px;
+
+font-weight:bold;
+
+color:white;
+
+border:
+3px solid rgba(255,255,255,0.15);
+
+box-shadow:
+0 0 20px rgba(124,58,237,0.5);
+}
+
+.infoPerfil h3{
+
+font-size:20px;
+
+margin-bottom:4px;
+}
+
+.infoPerfil p{
+
+color:#cbd5e1;
+
+font-size:14px;
+}
+
+.ganhosBox{
+
+margin-top:20px;
+
+padding:20px;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+text-align:center;
+
+box-shadow:
+0 10px 30px rgba(37,99,235,0.35);
+}
+
+.ganhosBox h1{
+
+font-size:40px;
+
+margin-top:10px;
+}
+
+.ganhosBox p{
+
+margin-top:8px;
+
+font-size:15px;
+
+opacity:0.9;
+}
+
+.statusPedido{
+
+margin-top:10px;
+
+font-size:15px;
+
+font-weight:bold;
+
+padding:8px 14px;
+
+border-radius:30px;
+
+display:inline-block;
+
+background:
+rgba(255,255,255,0.08);
+}
+
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
 
 <div
 class="card"
 id="cardLogin"
 >
 
-<h1>Cliente</h1>
+<h1>
+Entregador Premium
+</h1>
 
 <input
 type="text"
-id="nomeDono"
+id="nome"
 placeholder="Nome"
->
-
-<input
-type="text"
-id="empresa"
-placeholder="Empresa"
 >
 
 <input
@@ -126,72 +379,66 @@ Entrar
 <button
 id="btnSair"
 class="hidden"
-style="background:#ef4444;"
+style="
+background:
+linear-gradient(
+90deg,
+#ef4444,
+#dc2626
+);
+"
 >
 Sair
 </button>
 
 </div>
 
-<!-- PEDIDO -->
-
 <div
 class="card hidden"
-id="cardPedido"
+id="cardPedidos"
 >
 
-<h2>Novo Pedido</h2>
+<div class="perfil">
 
-<textarea
-id="descricao"
-placeholder="Descrição do pedido"
-></textarea>
+<div class="avatar">
+🚴
+</div>
 
-<input
-type="text"
-id="telefone"
-placeholder="Telefone"
->
+<div class="infoPerfil">
 
-<input
-type="text"
-id="endereco"
-placeholder="Endereço"
->
+<h3 id="nomePerfil">
+Entregador
+</h3>
 
-<input
-type="file"
-id="foto"
->
-
-<select id="entregadorSelect">
-
-<option value="">
-Escolher entregador
-</option>
-
-</select>
-
-<button id="btnPedido">
-Enviar Pedido
-</button>
+<p>
+Painel Premium de Entregas
+</p>
 
 </div>
 
-<!-- LISTA -->
+</div>
 
-<div
-class="card hidden"
-id="cardLista"
->
-
-<h2>Meus Pedidos</h2>
-
-<h2 id="contadorPedidos">
-0 pedidos feitos
+<h2>
+Pedidos
 </h2>
 
-<div id="listaPedidos"></div>
+<div id="pedidos"></div>
+
+<div class="ganhosBox">
+
+<h2>
+💰 Ganhos do entregador
+</h2>
+
+<h1 id="totalGanhos">
+R$ 0,00
+</h1>
+
+<p id="quantidadePedidos">
+0 pedidos finalizados
+</p>
+
+</div>
 
 </div>
 
@@ -217,33 +464,23 @@ import {
 getDatabase,
 ref,
 set,
-push,
 onValue,
-remove
+update,
+onDisconnect
 }
 from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-import {
-getStorage,
-ref as storageRef,
-uploadBytes,
-getDownloadURL,
-deleteObject
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
 const firebaseConfig = {
-
-databaseURL:
-"https://ferramentas-projeto.firebaseio.com/",
 
 apiKey:
 "AIzaSyDrtZxbKXk7hjlqBL_BLoZMTBdc5iqBCXo",
 
 authDomain:
 "ferramentas-projeto.firebaseapp.com",
+
+databaseURL:
+"https://ferramentas-projeto.firebaseio.com/",
 
 projectId:
 "ferramentas-projeto",
@@ -268,14 +505,8 @@ getAuth(app);
 const db =
 getDatabase(app);
 
-const storage =
-getStorage(app);
-
-const nomeDono =
-document.getElementById("nomeDono");
-
-const empresa =
-document.getElementById("empresa");
+const nome =
+document.getElementById("nome");
 
 const email =
 document.getElementById("email");
@@ -283,108 +514,29 @@ document.getElementById("email");
 const senha =
 document.getElementById("senha");
 
-const telefone =
-document.getElementById("telefone");
-
-const endereco =
-document.getElementById("endereco");
-
-const descricao =
-document.getElementById("descricao");
-
-const foto =
-document.getElementById("foto");
-
-const entregadorSelect =
-document.getElementById("entregadorSelect");
-
-const listaPedidos =
-document.getElementById("listaPedidos");
-
-const contadorPedidos =
-document.getElementById("contadorPedidos");
-
 const btnCadastrar =
 document.getElementById("btnCadastrar");
 
 const btnLogin =
 document.getElementById("btnLogin");
 
-const btnPedido =
-document.getElementById("btnPedido");
-
 const btnSair =
 document.getElementById("btnSair");
 
-const cardPedido =
-document.getElementById("cardPedido");
+const pedidos =
+document.getElementById("pedidos");
 
-const cardLista =
-document.getElementById("cardLista");
+const cardPedidos =
+document.getElementById("cardPedidos");
 
-async function carregarEntregadores(){
+const totalGanhos =
+document.getElementById("totalGanhos");
 
-const entregadoresRef =
-ref(db,"entregadores");
+const quantidadePedidos =
+document.getElementById("quantidadePedidos");
 
-onValue(entregadoresRef,(snapshot)=>{
-
-entregadorSelect.innerHTML =
-`
-<option value="">
-Escolher entregador
-</option>
-`;
-
-snapshot.forEach((docu)=>{
-
-const item =
-docu.val();
-
-entregadorSelect.innerHTML +=
-`
-<option value="${docu.key}">
-${item.nome}
-</option>
-`;
-
-});
-
-});
-
-}
-
-carregarEntregadores();
-
-async function pegarNomeEntregador(id){
-
-return new Promise((resolve)=>{
-
-const entregadorRef =
-ref(db,"entregadores/" + id);
-
-onValue(entregadorRef,(snapshot)=>{
-
-if(snapshot.exists()){
-
-const dados =
-snapshot.val();
-
-resolve(dados.nome || "");
-
-}else{
-
-resolve("");
-
-}
-
-},{
-onlyOnce:true
-});
-
-});
-
-}
+const nomePerfil =
+document.getElementById("nomePerfil");
 
 btnCadastrar.onclick =
 async ()=>{
@@ -392,13 +544,15 @@ async ()=>{
 try{
 
 if(
-!nomeDono.value ||
-!empresa.value ||
+!nome.value ||
 !email.value ||
 !senha.value
 ){
+
 alert("Preencha todos os campos");
+
 return;
+
 }
 
 const userCredential =
@@ -412,14 +566,21 @@ const user =
 userCredential.user;
 
 await set(
-ref(db,"clientes/" + user.uid),
+ref(db,"entregadores/" + user.uid),
 {
+
 uid:user.uid,
-nome:nomeDono.value,
-empresa:empresa.value,
+
+nome:nome.value,
+
 email:email.value,
+
 online:true,
+
+ultimoAcesso:Date.now(),
+
 createdAt:Date.now()
+
 }
 );
 
@@ -429,7 +590,18 @@ alert("Cadastro realizado");
 
 console.log(error);
 
+if(
+error.code ===
+"auth/email-already-in-use"
+){
+
+alert("Email já cadastrado");
+
+}else{
+
 alert(error.message);
+
+}
 
 }
 
@@ -446,115 +618,31 @@ email.value,
 senha.value
 );
 
-alert("Login realizado");
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-};
-
-btnPedido.onclick =
-async ()=>{
-
-try{
-
 const user =
 auth.currentUser;
 
-if(!user){
-alert("Faça login");
-return;
+await update(
+ref(db,"entregadores/" + user.uid),
+{
+online:true,
+ultimoAcesso:Date.now()
 }
-
-if(
-!descricao.value ||
-!telefone.value ||
-!endereco.value ||
-!entregadorSelect.value
-){
-alert("Preencha os campos");
-return;
-}
-
-let fotoURL = "";
-
-let caminhoFoto = "";
-
-if(foto.files.length > 0){
-
-caminhoFoto =
-"pedidos/" + Date.now();
-
-const imgRef =
-storageRef(
-storage,
-caminhoFoto
 );
 
-await uploadBytes(
-imgRef,
-foto.files[0]
-);
-
-fotoURL =
-await getDownloadURL(imgRef);
-
-}
-
-const nomeEntregador =
-await pegarNomeEntregador(
-entregadorSelect.value
-);
-
-const novoPedido =
-push(ref(db,"pedidos"));
-
-await set(novoPedido,{
-
-clienteId:user.uid,
-
-nomeCliente:nomeDono.value,
-
-empresa:empresa.value,
-
-telefone:telefone.value,
-
-endereco:endereco.value,
-
-descricao:descricao.value,
-
-entregadorId:entregadorSelect.value,
-
-nomeEntregador:nomeEntregador,
-
-fotoPedido:fotoURL,
-
-caminhoFoto:caminhoFoto,
-
-status:"aguardando",
-
-data:Date.now()
-
+onDisconnect(
+ref(db,"entregadores/" + user.uid)
+).update({
+online:false,
+ultimoAcesso:Date.now()
 });
 
-alert("Pedido enviado");
-
-descricao.value = "";
-
-telefone.value = "";
-
-endereco.value = "";
-
-foto.value = "";
+alert("Login realizado");
 
 }catch(error){
 
 console.log(error);
 
-alert(error.message);
+alert("Email ou senha incorretos");
 
 }
 
@@ -574,61 +662,131 @@ ref(db,"pedidos");
 
 onValue(pedidosRef,(snapshot)=>{
 
-listaPedidos.innerHTML = "";
+pedidos.innerHTML = "";
 
-let totalPedidos = 0;
+let total = 0;
+
+let quantidade = 0;
+
+if(!snapshot.exists()){
+
+pedidos.innerHTML = `
+<p>
+Nenhum pedido encontrado
+</p>
+`;
+
+return;
+
+}
 
 snapshot.forEach((docu)=>{
 
 const item =
 docu.val();
 
-if(item.clienteId === user.uid){
+if(
+item &&
+item.entregadorId === user.uid
+){
 
-totalPedidos++;
+if(item.status === "entregue"){
 
-listaPedidos.innerHTML +=
+total += 2.50;
 
-`
+quantidade++;
+
+}
+
+pedidos.innerHTML += `
 
 <div class="pedido">
 
-<h3>
-${item.nomeCliente}
-</h3>
+<h2>
+${item.nomeCliente || 'Cliente'}
+</h2>
 
 <p>
-${item.descricao}
+${item.descricao || ''}
 </p>
 
 <p>
-Status:
-${item.status}
+📞 ${item.telefone || ''}
 </p>
 
 <p>
-Entregador:
-${item.nomeEntregador || 'Não definido'}
+📍 ${item.endereco || ''}
+</p>
+
+<p class="statusPedido">
+
+📦 Status:
+${item.status || 'aguardando'}
+
 </p>
 
 <p>
-${item.endereco}
+<span class="
+${item.online ? 'online' : 'offline'}
+">
+${item.online ? '🟢 Online' : '🔴 Offline'}
+</span>
 </p>
 
 ${
 item.fotoPedido
 ?
-`<img src="${item.fotoPedido}">`
+`
+<img src="${item.fotoPedido}">
+`
 :
-""
+''
 }
 
+${
+item.status !== "entregue"
+?
+`
+
 <button
-onclick="window.excluirPedido('${docu.key}')"
-style="background:#ef4444;"
+onclick="window.atualizarPedido('${docu.key}','aceito')"
 >
-Excluir
+Aceitar
 </button>
+
+<button
+onclick="window.atualizarPedido('${docu.key}','entregando')"
+>
+Saiu para entrega
+</button>
+
+<button
+onclick="window.atualizarPedido('${docu.key}','entregue')"
+>
+Finalizar
+</button>
+
+`
+:
+`
+
+<div
+style="
+margin-top:15px;
+padding:12px;
+background:#22c55e;
+border-radius:12px;
+text-align:center;
+font-weight:bold;
+"
+>
+
+Pedido finalizado
+
+</div>
+
+`
+}
 
 </div>
 
@@ -638,71 +796,29 @@ Excluir
 
 });
 
-contadorPedidos.innerHTML =
-totalPedidos + " pedidos feitos";
+totalGanhos.innerHTML =
+"R$ " + total.toFixed(2);
+
+quantidadePedidos.innerHTML =
+quantidade + " pedidos finalizados";
 
 });
 
 }
 
-window.excluirPedido =
-async function(id){
-
-const confirmar =
-confirm(
-"Deseja realmente excluir este pedido?"
-);
-
-if(!confirmar){
-return;
-}
+window.atualizarPedido =
+async function(id,status){
 
 try{
 
-const pedidoRef =
-ref(db,"pedidos/" + id);
-
-onValue(pedidoRef,
-async (snapshot)=>{
-
-if(snapshot.exists()){
-
-const item =
-snapshot.val();
-
-if(item.caminhoFoto){
-
-try{
-
-const imgRef =
-storageRef(
-storage,
-item.caminhoFoto
+await update(
+ref(db,"pedidos/" + id),
+{
+status:status
+}
 );
 
-await deleteObject(imgRef);
-
-}catch(erroFoto){
-
-console.log(
-"Erro ao apagar foto"
-);
-
-}
-
-}
-
-await remove(
-ref(db,"pedidos/" + id)
-);
-
-alert("Pedido excluído");
-
-}
-
-},{
-onlyOnce:true
-});
+alert("Status atualizado");
 
 }catch(error){
 
@@ -715,9 +831,32 @@ alert(error.message);
 btnSair.onclick =
 async ()=>{
 
+try{
+
+const user =
+auth.currentUser;
+
+if(user){
+
+await update(
+ref(db,"entregadores/" + user.uid),
+{
+online:false,
+ultimoAcesso:Date.now()
+}
+);
+
+}
+
 await signOut(auth);
 
 location.reload();
+
+}catch(error){
+
+console.log(error);
+
+}
 
 };
 
@@ -725,9 +864,7 @@ onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
-nomeDono.classList.add("hidden");
-
-empresa.classList.add("hidden");
+nome.classList.add("hidden");
 
 email.classList.add("hidden");
 
@@ -739,17 +876,16 @@ btnLogin.classList.add("hidden");
 
 btnSair.classList.remove("hidden");
 
-cardPedido.classList.remove("hidden");
+cardPedidos.classList.remove("hidden");
 
-cardLista.classList.remove("hidden");
+nomePerfil.innerHTML =
+nome.value || "Entregador";
 
 buscarPedidos();
 
 }else{
 
-nomeDono.classList.remove("hidden");
-
-empresa.classList.remove("hidden");
+nome.classList.remove("hidden");
 
 email.classList.remove("hidden");
 
@@ -761,19 +897,21 @@ btnLogin.classList.remove("hidden");
 
 btnSair.classList.add("hidden");
 
-cardPedido.classList.add("hidden");
+cardPedidos.classList.add("hidden");
 
-cardLista.classList.add("hidden");
+pedidos.innerHTML = "";
 
-listaPedidos.innerHTML = "";
+totalGanhos.innerHTML =
+"R$ 0,00";
 
-contadorPedidos.innerHTML =
-"0 pedidos feitos";
+quantidadePedidos.innerHTML =
+"0 pedidos finalizados";
 
 }
 
 });
 
 </script>
+
 </body>
-</html>
+  </html>
