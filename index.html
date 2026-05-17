@@ -7,7 +7,7 @@
 <meta
 name="viewport"
 content="width=device-width, initial-scale=1.0"
->
+/>
 
 <title>Entregador Premium</title>
 
@@ -26,8 +26,8 @@ background:
 linear-gradient(
 180deg,
 #0f172a,
-#1e1b4b,
-#312e81
+#111827,
+#1e3a8a
 );
 
 color:white;
@@ -40,7 +40,7 @@ min-height:100vh;
 .card{
 
 background:
-rgba(15,23,42,0.75);
+rgba(15,23,42,0.82);
 
 backdrop-filter:blur(14px);
 
@@ -69,7 +69,7 @@ button{
 
 width:100%;
 
-padding:15px;
+padding:16px;
 
 border:none;
 
@@ -102,8 +102,8 @@ button{
 background:
 linear-gradient(
 90deg,
-#7c3aed,
-#2563eb
+#2563eb,
+#7c3aed
 );
 
 color:white;
@@ -162,8 +162,8 @@ height:5px;
 background:
 linear-gradient(
 90deg,
-#7c3aed,
-#06b6d4
+#2563eb,
+#7c3aed
 );
 }
 
@@ -189,38 +189,38 @@ display:none !important;
 
 .online{
 
-color:#22c55e;
+display:inline-block;
+
+margin-top:8px;
+
+padding:7px 14px;
+
+border-radius:30px;
 
 font-weight:bold;
 
 background:
 rgba(34,197,94,0.15);
 
-padding:6px 12px;
-
-border-radius:30px;
-
-display:inline-block;
-
-margin-top:8px;
+color:#22c55e;
 }
 
 .offline{
 
-color:#ef4444;
+display:inline-block;
+
+margin-top:8px;
+
+padding:7px 14px;
+
+border-radius:30px;
 
 font-weight:bold;
 
 background:
 rgba(239,68,68,0.15);
 
-padding:6px 12px;
-
-border-radius:30px;
-
-display:inline-block;
-
-margin-top:8px;
+color:#ef4444;
 }
 
 .perfil{
@@ -231,22 +231,22 @@ align-items:center;
 
 gap:14px;
 
-margin-bottom:18px;
+margin-bottom:20px;
 }
 
 .avatar{
 
-width:65px;
+width:70px;
 
-height:65px;
+height:70px;
 
 border-radius:50%;
 
 background:
 linear-gradient(
 135deg,
-#7c3aed,
-#06b6d4
+#2563eb,
+#7c3aed
 );
 
 display:flex;
@@ -255,22 +255,22 @@ align-items:center;
 
 justify-content:center;
 
-font-size:26px;
+font-size:30px;
 
 font-weight:bold;
 
 color:white;
 
 border:
-3px solid rgba(255,255,255,0.15);
+3px solid rgba(255,255,255,0.12);
 
 box-shadow:
-0 0 20px rgba(124,58,237,0.5);
+0 0 25px rgba(37,99,235,0.5);
 }
 
 .infoPerfil h3{
 
-font-size:20px;
+font-size:22px;
 
 margin-bottom:4px;
 }
@@ -293,14 +293,11 @@ border-radius:24px;
 background:
 linear-gradient(
 135deg,
-#7c3aed,
-#2563eb
+#2563eb,
+#7c3aed
 );
 
 text-align:center;
-
-box-shadow:
-0 10px 30px rgba(37,99,235,0.35);
 }
 
 .ganhosBox h1{
@@ -310,31 +307,59 @@ font-size:40px;
 margin-top:10px;
 }
 
-.ganhosBox p{
-
-margin-top:8px;
-
-font-size:15px;
-
-opacity:0.9;
-}
-
 .statusPedido{
 
+display:inline-block;
+
 margin-top:10px;
-
-font-size:15px;
-
-font-weight:bold;
 
 padding:8px 14px;
 
 border-radius:30px;
 
-display:inline-block;
-
 background:
 rgba(255,255,255,0.08);
+
+font-weight:bold;
+}
+
+.modalImagem{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:
+rgba(0,0,0,0.92);
+
+display:none;
+
+align-items:center;
+
+justify-content:center;
+
+z-index:9999;
+
+padding:20px;
+}
+
+.modalImagem img{
+
+width:100%;
+
+max-width:900px;
+
+max-height:95vh;
+
+border-radius:20px;
+
+object-fit:contain;
 }
 
 </style>
@@ -354,19 +379,19 @@ Entregador Premium
 type="text"
 id="nome"
 placeholder="Nome"
->
+/>
 
 <input
 type="email"
 id="email"
 placeholder="Email"
->
+/>
 
 <input
 type="password"
 id="senha"
 placeholder="Senha"
->
+/>
 
 <button id="btnCadastrar">
 Cadastrar
@@ -442,6 +467,18 @@ R$ 0,00
 
 </div>
 
+<div
+class="modalImagem"
+id="modalImagem"
+onclick="
+this.style.display='none'
+"
+>
+
+<img id="imagemGrande">
+
+</div>
+
 <script type="module">
 
 import {
@@ -480,7 +517,7 @@ authDomain:
 "ferramentas-projeto.firebaseapp.com",
 
 databaseURL:
-"https://ferramentas-projeto.firebaseio.com/",
+"https://ferramentas-projeto-default-rtdb.firebaseio.com",
 
 projectId:
 "ferramentas-projeto",
@@ -624,16 +661,33 @@ auth.currentUser;
 await update(
 ref(db,"entregadores/" + user.uid),
 {
-online:true,
-ultimoAcesso:Date.now()
+online:true
 }
 );
 
-onDisconnect(
-ref(db,"entregadores/" + user.uid)
-).update({
-online:false,
-ultimoAcesso:Date.now()
+const pedidosRef =
+ref(db,"pedidos");
+
+onValue(pedidosRef,(snapshot)=>{
+
+snapshot.forEach(async (docu)=>{
+
+const item =
+docu.val();
+
+if(item.entregadorId === user.uid){
+
+await update(
+ref(db,"pedidos/" + docu.key),
+{
+entregadorOnline:true
+}
+);
+
+}
+
+});
+
 });
 
 alert("Login realizado");
@@ -703,7 +757,7 @@ pedidos.innerHTML += `
 <div class="pedido">
 
 <h2>
-${item.nomeCliente || 'Cliente'}
+Cliente
 </h2>
 
 <p>
@@ -725,19 +779,31 @@ ${item.status || 'aguardando'}
 
 </p>
 
-<p>
-<span class="
-${item.online ? 'online' : 'offline'}
+<p class="
+${item.entregadorOnline ? 'online' : 'offline'}
 ">
-${item.online ? '🟢 Online' : '🔴 Offline'}
-</span>
+
+${item.entregadorOnline
+? '🟢 Online'
+: '🔴 Offline'}
+
 </p>
 
 ${
 item.fotoPedido
 ?
 `
-<img src="${item.fotoPedido}">
+<img
+src="${item.fotoPedido}"
+onclick="
+window.abrirImagem(
+'${item.fotoPedido}'
+)
+"
+style="
+cursor:pointer;
+"
+/>
 `
 :
 ''
@@ -811,10 +877,14 @@ async function(id,status){
 
 try{
 
+const user =
+auth.currentUser;
+
 await update(
 ref(db,"pedidos/" + id),
 {
-status:status
+status:status,
+entregadorOnline:true
 }
 );
 
@@ -828,6 +898,19 @@ alert(error.message);
 
 };
 
+window.abrirImagem =
+function(url){
+
+document.getElementById(
+"modalImagem"
+).style.display = "flex";
+
+document.getElementById(
+"imagemGrande"
+).src = url;
+
+};
+
 btnSair.onclick =
 async ()=>{
 
@@ -836,17 +919,39 @@ try{
 const user =
 auth.currentUser;
 
-if(user){
+const pedidosRef =
+ref(db,"pedidos");
+
+onValue(pedidosRef,(snapshot)=>{
+
+snapshot.forEach(async (docu)=>{
+
+const item =
+docu.val();
+
+if(item.entregadorId === user.uid){
 
 await update(
-ref(db,"entregadores/" + user.uid),
+ref(db,"pedidos/" + docu.key),
 {
-online:false,
-ultimoAcesso:Date.now()
+entregadorOnline:false
 }
 );
 
 }
+
+});
+
+},{
+onlyOnce:true
+});
+
+await update(
+ref(db,"entregadores/" + user.uid),
+{
+online:false
+}
+);
 
 await signOut(auth);
 
@@ -912,6 +1017,5 @@ quantidadePedidos.innerHTML =
 });
 
 </script>
-
 </body>
   </html>
