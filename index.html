@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>Cliente</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:white;
+padding:20px;
+min-height:100vh;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(10px);
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+input,
+button,
+textarea,
+select{
+width:100%;
+padding:14px;
+border:none;
+border-radius:14px;
+margin-top:10px;
+font-size:16px;
+}
+
+button{
+background:#2563eb;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+textarea{
+min-height:120px;
+resize:none;
+}
+
+.pedido{
+background:#1e293b;
+padding:15px;
+border-radius:15px;
+margin-top:15px;
+}
+
+img{
+width:100%;
+border-radius:15px;
+margin-top:10px;
+max-height:300px;
+object-fit:cover;
+}
+
+.hidden{
+display:none !important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+
+<div
+class="card"
+id="cardLogin"
+>
+
+<h1>Cliente</h1>
+
+<input
+type="text"
+id="nomeDono"
+placeholder="Nome"
+>
+
+<input
+type="text"
+id="empresa"
+placeholder="Empresa"
+>
+
+<input
+type="email"
+id="email"
+placeholder="Email"
+>
+
+<input
+type="password"
+id="senha"
+placeholder="Senha"
+>
+
+<button id="btnCadastrar">
+Cadastrar
+</button>
+
+<button id="btnLogin">
+Entrar
+</button>
+
+<button
+id="btnSair"
+class="hidden"
+style="background:#ef4444;"
+>
+Sair
+</button>
+
+</div>
+
+<!-- PEDIDO -->
+
+<div
+class="card hidden"
+id="cardPedido"
+>
+
+<h2>Novo Pedido</h2>
+
+<textarea
+id="descricao"
+placeholder="Descrição do pedido"
+></textarea>
+
+<input
+type="text"
+id="telefone"
+placeholder="Telefone"
+>
+
+<input
+type="text"
+id="endereco"
+placeholder="Endereço"
+>
+
+<input
+type="file"
+id="foto"
+>
+
+<select id="entregadorSelect">
+
+<option value="">
+Escolher entregador
+</option>
+
+</select>
+
+<button id="btnPedido">
+Enviar Pedido
+</button>
+
+</div>
+
+<!-- LISTA -->
+
+<div
+class="card hidden"
+id="cardLista"
+>
+
+<h2>Meus Pedidos</h2>
+
+<h2 id="contadorPedidos">
+0 pedidos feitos
+</h2>
+
+<div id="listaPedidos"></div>
+
+</div>
+
+<script type="module">
+
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getDatabase,
+ref,
+set,
+push,
+onValue,
+remove
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+getStorage,
+ref as storageRef,
+uploadBytes,
+getDownloadURL,
+deleteObject
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+
+databaseURL:
+"https://ferramentas-projeto.firebaseio.com/",
+
+apiKey:
+"AIzaSyDrtZxbKXk7hjlqBL_BLoZMTBdc5iqBCXo",
+
+authDomain:
+"ferramentas-projeto.firebaseapp.com",
+
+projectId:
+"ferramentas-projeto",
+
+storageBucket:
+"ferramentas-projeto.appspot.com",
+
+messagingSenderId:
+"877191590019",
+
+appId:
+"1:877191590019:web:152d4d35bdd3024c53abb6"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const auth =
+getAuth(app);
+
+const db =
+getDatabase(app);
+
+const storage =
+getStorage(app);
+
+const nomeDono =
+document.getElementById("nomeDono");
+
+const empresa =
+document.getElementById("empresa");
+
+const email =
+document.getElementById("email");
+
+const senha =
+document.getElementById("senha");
+
+const telefone =
+document.getElementById("telefone");
+
+const endereco =
+document.getElementById("endereco");
+
+const descricao =
+document.getElementById("descricao");
+
+const foto =
+document.getElementById("foto");
+
+const entregadorSelect =
+document.getElementById("entregadorSelect");
+
+const listaPedidos =
+document.getElementById("listaPedidos");
+
+const contadorPedidos =
+document.getElementById("contadorPedidos");
+
+const btnCadastrar =
+document.getElementById("btnCadastrar");
+
+const btnLogin =
+document.getElementById("btnLogin");
+
+const btnPedido =
+document.getElementById("btnPedido");
+
+const btnSair =
+document.getElementById("btnSair");
+
+const cardPedido =
+document.getElementById("cardPedido");
+
+const cardLista =
+document.getElementById("cardLista");
+
+async function carregarEntregadores(){
+
+const entregadoresRef =
+ref(db,"entregadores");
+
+onValue(entregadoresRef,(snapshot)=>{
+
+entregadorSelect.innerHTML =
+`
+<option value="">
+Escolher entregador
+</option>
+`;
+
+snapshot.forEach((docu)=>{
+
+const item =
+docu.val();
+
+entregadorSelect.innerHTML +=
+`
+<option value="${docu.key}">
+${item.nome}
+</option>
+`;
+
+});
+
+});
+
+}
+
+carregarEntregadores();
+
+async function pegarNomeEntregador(id){
+
+return new Promise((resolve)=>{
+
+const entregadorRef =
+ref(db,"entregadores/" + id);
+
+onValue(entregadorRef,(snapshot)=>{
+
+if(snapshot.exists()){
+
+const dados =
+snapshot.val();
+
+resolve(dados.nome || "");
+
+}else{
+
+resolve("");
+
+}
+
+},{
+onlyOnce:true
+});
+
+});
+
+}
+
+btnCadastrar.onclick =
+async ()=>{
+
+try{
+
+if(
+!nomeDono.value ||
+!empresa.value ||
+!email.value ||
+!senha.value
+){
+alert("Preencha todos os campos");
+return;
+}
+
+const userCredential =
+await createUserWithEmailAndPassword(
+auth,
+email.value,
+senha.value
+);
+
+const user =
+userCredential.user;
+
+await set(
+ref(db,"clientes/" + user.uid),
+{
+uid:user.uid,
+nome:nomeDono.value,
+empresa:empresa.value,
+email:email.value,
+online:true,
+createdAt:Date.now()
+}
+);
+
+alert("Cadastro realizado");
+
+}catch(error){
+
+console.log(error);
+
+alert(error.message);
+
+}
+
+};
+
+btnLogin.onclick =
+async ()=>{
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email.value,
+senha.value
+);
+
+alert("Login realizado");
+
+}catch(error){
+
+alert(error.message);
+
+}
+
+};
+
+btnPedido.onclick =
+async ()=>{
+
+try{
+
+const user =
+auth.currentUser;
+
+if(!user){
+alert("Faça login");
+return;
+}
+
+if(
+!descricao.value ||
+!telefone.value ||
+!endereco.value ||
+!entregadorSelect.value
+){
+alert("Preencha os campos");
+return;
+}
+
+let fotoURL = "";
+
+let caminhoFoto = "";
+
+if(foto.files.length > 0){
+
+caminhoFoto =
+"pedidos/" + Date.now();
+
+const imgRef =
+storageRef(
+storage,
+caminhoFoto
+);
+
+await uploadBytes(
+imgRef,
+foto.files[0]
+);
+
+fotoURL =
+await getDownloadURL(imgRef);
+
+}
+
+const nomeEntregador =
+await pegarNomeEntregador(
+entregadorSelect.value
+);
+
+const novoPedido =
+push(ref(db,"pedidos"));
+
+await set(novoPedido,{
+
+clienteId:user.uid,
+
+nomeCliente:nomeDono.value,
+
+empresa:empresa.value,
+
+telefone:telefone.value,
+
+endereco:endereco.value,
+
+descricao:descricao.value,
+
+entregadorId:entregadorSelect.value,
+
+nomeEntregador:nomeEntregador,
+
+fotoPedido:fotoURL,
+
+caminhoFoto:caminhoFoto,
+
+status:"aguardando",
+
+data:Date.now()
+
+});
+
+alert("Pedido enviado");
+
+descricao.value = "";
+
+telefone.value = "";
+
+endereco.value = "";
+
+foto.value = "";
+
+}catch(error){
+
+console.log(error);
+
+alert(error.message);
+
+}
+
+};
+
+function buscarPedidos(){
+
+const user =
+auth.currentUser;
+
+if(!user){
+return;
+}
+
+const pedidosRef =
+ref(db,"pedidos");
+
+onValue(pedidosRef,(snapshot)=>{
+
+listaPedidos.innerHTML = "";
+
+let totalPedidos = 0;
+
+snapshot.forEach((docu)=>{
+
+const item =
+docu.val();
+
+if(item.clienteId === user.uid){
+
+totalPedidos++;
+
+listaPedidos.innerHTML +=
+
+`
+
+<div class="pedido">
+
+<h3>
+${item.nomeCliente}
+</h3>
+
+<p>
+${item.descricao}
+</p>
+
+<p>
+Status:
+${item.status}
+</p>
+
+<p>
+Entregador:
+${item.nomeEntregador || 'Não definido'}
+</p>
+
+<p>
+${item.endereco}
+</p>
+
+${
+item.fotoPedido
+?
+`<img src="${item.fotoPedido}">`
+:
+""
+}
+
+<button
+onclick="window.excluirPedido('${docu.key}')"
+style="background:#ef4444;"
+>
+Excluir
+</button>
+
+</div>
+
+`;
+
+}
+
+});
+
+contadorPedidos.innerHTML =
+totalPedidos + " pedidos feitos";
+
+});
+
+}
+
+window.excluirPedido =
+async function(id){
+
+const confirmar =
+confirm(
+"Deseja realmente excluir este pedido?"
+);
+
+if(!confirmar){
+return;
+}
+
+try{
+
+const pedidoRef =
+ref(db,"pedidos/" + id);
+
+onValue(pedidoRef,
+async (snapshot)=>{
+
+if(snapshot.exists()){
+
+const item =
+snapshot.val();
+
+if(item.caminhoFoto){
+
+try{
+
+const imgRef =
+storageRef(
+storage,
+item.caminhoFoto
+);
+
+await deleteObject(imgRef);
+
+}catch(erroFoto){
+
+console.log(
+"Erro ao apagar foto"
+);
+
+}
+
+}
+
+await remove(
+ref(db,"pedidos/" + id)
+);
+
+alert("Pedido excluído");
+
+}
+
+},{
+onlyOnce:true
+});
+
+}catch(error){
+
+alert(error.message);
+
+}
+
+};
+
+btnSair.onclick =
+async ()=>{
+
+await signOut(auth);
+
+location.reload();
+
+};
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+nomeDono.classList.add("hidden");
+
+empresa.classList.add("hidden");
+
+email.classList.add("hidden");
+
+senha.classList.add("hidden");
+
+btnCadastrar.classList.add("hidden");
+
+btnLogin.classList.add("hidden");
+
+btnSair.classList.remove("hidden");
+
+cardPedido.classList.remove("hidden");
+
+cardLista.classList.remove("hidden");
+
+buscarPedidos();
+
+}else{
+
+nomeDono.classList.remove("hidden");
+
+empresa.classList.remove("hidden");
+
+email.classList.remove("hidden");
+
+senha.classList.remove("hidden");
+
+btnCadastrar.classList.remove("hidden");
+
+btnLogin.classList.remove("hidden");
+
+btnSair.classList.add("hidden");
+
+cardPedido.classList.add("hidden");
+
+cardLista.classList.add("hidden");
+
+listaPedidos.innerHTML = "";
+
+contadorPedidos.innerHTML =
+"0 pedidos feitos";
+
+}
+
+});
+
+</script>
+</body>
+</html>
