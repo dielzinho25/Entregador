@@ -1,0 +1,19 @@
+CORREÇÃO DOS REGISTROS INCOMPLETOS
+
+No Firebase Realtime Database:
+1. Abra a pasta entregadores.
+2. Exclua somente os códigos que possuem apenas:
+   online
+   ultimoAcesso
+3. Não exclua registros que possuem uid, nome, email e createdAt.
+
+A versão v2 não criará novamente esses registros incompletos.
+Também não mostrará esses códigos antigos na lista de entregadores.
+
+
+VERSÃO 3 - GANHOS PERMANENTES
+- Ao finalizar um pedido, o ganho é salvo em:
+  ganhosEntregadores/UID_DO_ENTREGADOR/ID_DO_PEDIDO
+- Excluir o pedido não apaga o ganho.
+- O mesmo pedido só conta uma vez porque o ID do pedido é usado como chave.
+- Valor padrão por entrega: R$ 2,50.
