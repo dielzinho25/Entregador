@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Painel PWA do Entregador Premium">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Entregador">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" href="./icon-192.png">
+  <title>Entregador Premium</title>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+    body{
+      background:linear-gradient(180deg,#0f172a,#111827,#1e3a8a);
+      color:white;padding:18px;min-height:100vh;
+      padding-top:max(18px,env(safe-area-inset-top));
+      padding-bottom:max(18px,env(safe-area-inset-bottom))
+    }
+    .card{
+      background:rgba(15,23,42,.82);backdrop-filter:blur(14px);
+      padding:22px;border-radius:28px;margin-bottom:20px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 10px 35px rgba(0,0,0,.35)
+    }
+    h1,h2{font-weight:800;letter-spacing:.5px}
+    input,button{width:100%;padding:16px;border:none;border-radius:18px;margin-top:12px;font-size:16px}
+    input{background:rgba(255,255,255,.08);color:white;outline:none;border:1px solid rgba(255,255,255,.08)}
+    input::placeholder{color:#cbd5e1}
+    button{background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;font-weight:bold;cursor:pointer;transition:.3s}
+    button:hover{transform:scale(1.02);opacity:.95}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .pedido{
+      background:linear-gradient(180deg,#1e293b,#0f172a);
+      padding:18px;border-radius:24px;margin-top:18px;
+      border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden
+    }
+    .pedido::before{content:"";position:absolute;top:0;left:0;width:100%;height:5px;background:linear-gradient(90deg,#2563eb,#7c3aed)}
+    img{width:100%;border-radius:18px;margin-top:14px;max-height:280px;object-fit:cover;border:2px solid rgba(255,255,255,.08)}
+    .hidden{display:none!important}
+    .online,.offline{display:inline-block;margin-top:8px;padding:7px 14px;border-radius:30px;font-weight:bold}
+    .online{background:rgba(34,197,94,.15);color:#22c55e}
+    .offline{background:rgba(239,68,68,.15);color:#ef4444}
+    .perfil{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+    .avatar{
+      width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);
+      display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold;color:white;
+      border:3px solid rgba(255,255,255,.12);box-shadow:0 0 25px rgba(37,99,235,.5)
+    }
+    .infoPerfil h3{font-size:22px;margin-bottom:4px}
+    .infoPerfil p{color:#cbd5e1;font-size:14px}
+    .ganhosBox{margin-top:20px;padding:20px;border-radius:24px;background:linear-gradient(135deg,#2563eb,#7c3aed);text-align:center}
+    .ganhosBox h1{font-size:40px;margin-top:10px}
+    .statusPedido{display:inline-block;margin-top:10px;padding:8px 14px;border-radius:30px;background:rgba(255,255,255,.08);font-weight:bold}
+    .modalImagem{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+    .modalImagem img{width:100%;max-width:900px;max-height:95vh;border-radius:20px;object-fit:contain}
+    .aviso{margin-top:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.08);color:#cbd5e1}
+    .instalar{background:linear-gradient(90deg,#16a34a,#22c55e)}
+    .sair{background:linear-gradient(90deg,#ef4444,#dc2626)}
+  </style>
+</head>
+<body>
+
+  <div class="card" id="cardLogin">
+    <h1>Entregador Premium</h1>
+
+    <button id="btnInstalar" class="instalar hidden">📲 Instalar aplicativo</button>
+
+    <input type="text" id="nome" placeholder="Nome" autocomplete="name">
+    <input type="email" id="email" placeholder="Email" autocomplete="email">
+    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
+
+    <button id="btnCadastrar">Cadastrar</button>
+    <button id="btnLogin">Entrar</button>
+    <button id="btnSair" class="hidden sair">Sair</button>
+
+    <p id="avisoRede" class="aviso hidden">Você está sem internet. Os dados serão atualizados quando a conexão voltar.</p>
+  </div>
+
+  <div class="card hidden" id="cardPedidos">
+    <div class="perfil">
+      <div class="avatar">🚴</div>
+      <div class="infoPerfil">
+        <h3 id="nomePerfil">Entregador</h3>
+        <p>Painel Premium de Entregas</p>
+      </div>
+    </div>
+
+    <h2>Pedidos</h2>
+    <div id="pedidos"></div>
+
+    <div class="ganhosBox">
+      <h2>💰 Ganhos do entregador</h2>
+      <h1 id="totalGanhos">R$ 0,00</h1>
+      <p id="quantidadePedidos">0 pedidos finalizados</p>
+    </div>
+  </div>
+
+  <div class="modalImagem" id="modalImagem">
+    <img id="imagemGrande" alt="Imagem ampliada do pedido">
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getDatabase, ref, set, get, onValue, update, onDisconnect
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDrtZxbKXk7hjlqBL_BLoZMTBdc5iqBCXo",
+  authDomain: "ferramentas-projeto.firebaseapp.com",
+  databaseURL: "https://ferramentas-projeto.firebaseio.com/",
+  projectId: "ferramentas-projeto",
+  storageBucket: "ferramentas-projeto.appspot.com",
+  messagingSenderId: "877191590019",
+  appId: "1:877191590019:web:152d4d35bdd3024c53abb6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const $ = id => document.getElementById(id);
+const nome = $("nome");
+const email = $("email");
+const senha = $("senha");
+const btnCadastrar = $("btnCadastrar");
+const btnLogin = $("btnLogin");
+const btnSair = $("btnSair");
+const btnInstalar = $("btnInstalar");
+const pedidos = $("pedidos");
+const cardPedidos = $("cardPedidos");
+const totalGanhos = $("totalGanhos");
+const quantidadePedidos = $("quantidadePedidos");
+const nomePerfil = $("nomePerfil");
+const avisoRede = $("avisoRede");
+const modalImagem = $("modalImagem");
+const imagemGrande = $("imagemGrande");
+
+let cancelarPedidos = null;
+let eventoInstalacao = null;
+
+function escapar(valor) {
+  return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  })[caractere]);
+}
+
+function atualizarRede() {
+  avisoRede.classList.toggle("hidden", navigator.onLine);
+}
+window.addEventListener("online", atualizarRede);
+window.addEventListener("offline", atualizarRede);
+atualizarRede();
+
+window.addEventListener("beforeinstallprompt", evento => {
+  evento.preventDefault();
+  eventoInstalacao = evento;
+  btnInstalar.classList.remove("hidden");
+});
+
+btnInstalar.onclick = async () => {
+  if (!eventoInstalacao) return;
+  eventoInstalacao.prompt();
+  await eventoInstalacao.userChoice;
+  eventoInstalacao = null;
+  btnInstalar.classList.add("hidden");
+};
+
+btnCadastrar.onclick = async () => {
+  try {
+    const nomeDigitado = nome.value.trim();
+    const emailDigitado = email.value.trim();
+    const senhaDigitada = senha.value;
+
+    if (!nomeDigitado || !emailDigitado || !senhaDigitada) {
+      alert("Preencha todos os campos");
+      return;
+    }
+    if (senhaDigitada.length < 6) {
+      alert("A senha precisa ter pelo menos 6 caracteres");
+      return;
+    }
+
+    btnCadastrar.disabled = true;
+    const credencial = await createUserWithEmailAndPassword(auth, emailDigitado, senhaDigitada);
+    await set(ref(db, "entregadores/" + credencial.user.uid), {
+      uid: credencial.user.uid,
+      nome: nomeDigitado,
+      email: emailDigitado,
+      online: true,
+      ultimoAcesso: Date.now(),
+      createdAt: Date.now()
+    });
+    alert("Cadastro realizado");
+  } catch (error) {
+    console.error(error);
+    alert(error.code === "auth/email-already-in-use" ? "Email já cadastrado" : "Não foi possível cadastrar: " + error.message);
+  } finally {
+    btnCadastrar.disabled = false;
+  }
+};
+
+btnLogin.onclick = async () => {
+  try {
+    if (!email.value.trim() || !senha.value) {
+      alert("Informe o email e a senha");
+      return;
+    }
+    btnLogin.disabled = true;
+    const credencial = await signInWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      senha.value
+    );
+
+    const perfilSnap = await get(
+      ref(db, "entregadores/" + credencial.user.uid)
+    );
+
+    if (!perfilSnap.exists()) {
+      await signOut(auth);
+      alert("Esta conta não está cadastrada como entregador.");
+      return;
+    }
+
+    const perfil = perfilSnap.val();
+
+    if (!perfil?.nome || !perfil?.email || perfil?.uid !== credencial.user.uid) {
+      await signOut(auth);
+      alert("O cadastro deste entregador está incompleto.");
+      return;
+    }
+
+    alert("Login realizado");
+  } catch (error) {
+    console.error(error);
+    alert("Email ou senha incorretos");
+  } finally {
+    btnLogin.disabled = false;
+  }
+};
+
+async function configurarPresenca(user) {
+  const entregadorRef = ref(db, "entregadores/" + user.uid);
+  const conectadoRef = ref(db, ".info/connected");
+
+  onValue(conectadoRef, async snapshot => {
+    if (snapshot.val() !== true) return;
+    await onDisconnect(entregadorRef).update({
+      online: false,
+      ultimoAcesso: Date.now()
+    });
+    await update(entregadorRef, {
+      online: true,
+      ultimoAcesso: Date.now()
+    });
+  });
+}
+
+async function carregarPerfil(user) {
+  try {
+    const snapshot = await get(ref(db, "entregadores/" + user.uid));
+    const perfil = snapshot.val();
+    nomePerfil.textContent = perfil?.nome || user.email || "Entregador";
+  } catch {
+    nomePerfil.textContent = user.email || "Entregador";
+  }
+}
+
+function buscarPedidos(user) {
+  if (cancelarPedidos) cancelarPedidos();
+
+  cancelarPedidos = onValue(ref(db, "pedidos"), snapshot => {
+    pedidos.innerHTML = "";
+    let total = 0;
+    let quantidade = 0;
+    let encontrou = false;
+
+    snapshot.forEach(docu => {
+      const item = docu.val();
+      if (!item || item.entregadorId !== user.uid) return;
+
+      encontrou = true;
+      if (item.status === "entregue") {
+        total += Number(item.valorEntregador ?? 2.50);
+        quantidade++;
+      }
+
+      const foto = item.fotoPedido ? escapar(item.fotoPedido) : "";
+      const finalizado = item.status === "entregue";
+
+      pedidos.insertAdjacentHTML("beforeend", `
+        <div class="pedido">
+          <h2>Cliente</h2>
+          <p>${escapar(item.descricao)}</p>
+          <p>📞 ${escapar(item.telefone)}</p>
+          <p>📍 ${escapar(item.endereco)}</p>
+          <p class="statusPedido">📦 Status: ${escapar(item.status || "aguardando")}</p>
+          <p class="${item.entregadorOnline ? "online" : "offline"}">
+            ${item.entregadorOnline ? "🟢 Online" : "🔴 Offline"}
+          </p>
+          ${foto ? `<img src="${foto}" data-foto="${foto}" class="fotoPedido" alt="Foto do pedido">` : ""}
+          ${!finalizado ? `
+            <button data-id="${docu.key}" data-status="aceito" class="btnStatus">Aceitar</button>
+            <button data-id="${docu.key}" data-status="entregando" class="btnStatus">Saiu para entrega</button>
+            <button data-id="${docu.key}" data-status="entregue" class="btnStatus">Finalizar</button>
+          ` : `
+            <div style="margin-top:15px;padding:12px;background:#22c55e;border-radius:12px;text-align:center;font-weight:bold">
+              Pedido finalizado
+            </div>
+          `}
+        </div>
+      `);
+    });
+
+    if (!encontrou) pedidos.innerHTML = "<p>Nenhum pedido encontrado</p>";
+    totalGanhos.textContent = total.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+    quantidadePedidos.textContent = `${quantidade} pedido${quantidade === 1 ? "" : "s"} finalizado${quantidade === 1 ? "" : "s"}`;
+  });
+}
+
+pedidos.addEventListener("click", async evento => {
+  const botao = evento.target.closest(".btnStatus");
+  const foto = evento.target.closest(".fotoPedido");
+
+  if (foto) {
+    imagemGrande.src = foto.dataset.foto;
+    modalImagem.style.display = "flex";
+    return;
+  }
+  if (!botao) return;
+
+  try {
+    botao.disabled = true;
+    await update(ref(db, "pedidos/" + botao.dataset.id), {
+      status: botao.dataset.status,
+      entregadorOnline: true,
+      atualizadoEm: Date.now()
+    });
+    alert("Status atualizado");
+  } catch (error) {
+    alert("Erro ao atualizar: " + error.message);
+  } finally {
+    botao.disabled = false;
+  }
+});
+
+modalImagem.onclick = () => {
+  modalImagem.style.display = "none";
+  imagemGrande.src = "";
+};
+
+btnSair.onclick = async () => {
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      await update(ref(db, "entregadores/" + user.uid), {
+        online: false,
+        ultimoAcesso: Date.now()
+      });
+    }
+    await signOut(auth);
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível sair");
+  }
+};
+
+onAuthStateChanged(auth, async user => {
+  const logado = Boolean(user);
+  nome.classList.toggle("hidden", logado);
+  email.classList.toggle("hidden", logado);
+  senha.classList.toggle("hidden", logado);
+  btnCadastrar.classList.toggle("hidden", logado);
+  btnLogin.classList.toggle("hidden", logado);
+  btnSair.classList.toggle("hidden", !logado);
+  cardPedidos.classList.toggle("hidden", !logado);
+
+  if (user) {
+    const perfilSnap = await get(ref(db, "entregadores/" + user.uid));
+
+    if (!perfilSnap.exists()) {
+      await signOut(auth);
+      alert("Esta conta não pertence a um entregador.");
+      return;
+    }
+
+    const perfil = perfilSnap.val();
+
+    if (!perfil?.nome || !perfil?.email || perfil?.uid !== user.uid) {
+      await signOut(auth);
+      alert("Cadastro de entregador incompleto.");
+      return;
+    }
+
+    await carregarPerfil(user);
+    await configurarPresenca(user);
+    buscarPedidos(user);
+  } else {
+    if (cancelarPedidos) {
+      cancelarPedidos();
+      cancelarPedidos = null;
+    }
+    pedidos.innerHTML = "";
+    totalGanhos.textContent = "R$ 0,00";
+    quantidadePedidos.textContent = "0 pedidos finalizados";
+    nomePerfil.textContent = "Entregador";
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("./service-worker.js");
+      console.log("Service Worker registrado");
+    } catch (erro) {
+      console.error("Erro ao registrar Service Worker:", erro);
+    }
+  });
+}
+</script>
+</body>
+</html>
